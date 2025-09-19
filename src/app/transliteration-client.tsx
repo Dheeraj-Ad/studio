@@ -24,6 +24,8 @@ type HistoryItem = {
   timestamp: number;
 };
 
+type CameraFacingMode = 'user' | 'environment';
+
 type State = {
   imagePreview: string | null;
   sourceScript: string | null;
@@ -38,6 +40,7 @@ type State = {
   hasCameraPermission: boolean | null;
   isMeaningDialogOpen: boolean;
   history: HistoryItem[];
+  cameraFacingMode: CameraFacingMode;
 };
 
 const initialState: State = {
@@ -54,6 +57,7 @@ const initialState: State = {
   hasCameraPermission: null,
   isMeaningDialogOpen: false,
   history: [],
+  cameraFacingMode: 'user',
 };
 
 const MAX_HISTORY_ITEMS = 10;
@@ -77,35 +81,36 @@ export default function TransliterationClient() {
   }, []);
   
   useEffect(() => {
-    if (state.showCamera) {
-      const getCameraPermission = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({video: true});
-          setState(prev => ({ ...prev, hasCameraPermission: true}));
+    let stream: MediaStream | null = null;
+    const getCameraPermission = async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: state.cameraFacingMode }
+        });
+        setState(prev => ({ ...prev, hasCameraPermission: true}));
 
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setState(prev => ({ ...prev, hasCameraPermission: false}));
-          toast({
-            variant: 'destructive',
-            title: 'Camera Access Denied',
-            description: 'Please enable camera permissions in your browser settings to use this app.',
-          });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
         }
-      };
-
-      getCameraPermission();
-      
-      return () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-          (videoRef.current.srcObject as MediaStream).getTracks().forEach(track => track.stop());
-        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setState(prev => ({ ...prev, hasCameraPermission: false}));
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings to use this app.',
+        });
       }
+    };
+    
+    if (state.showCamera) {
+      getCameraPermission();
     }
-  }, [state.showCamera, toast]);
+    
+    return () => {
+      stream?.getTracks().forEach(track => track.stop());
+    }
+  }, [state.showCamera, state.cameraFacingMode, toast]);
 
 
   const processImageFile = async (file: File) => {
@@ -269,6 +274,13 @@ export default function TransliterationClient() {
     });
   }
 
+  const handleRotateCamera = () => {
+    setState(prev => ({
+      ...prev,
+      cameraFacingMode: prev.cameraFacingMode === 'user' ? 'environment' : 'user',
+    }));
+  };
+
   const hasContent = state.imagePreview || state.inputText;
 
   return (
@@ -307,6 +319,9 @@ export default function TransliterationClient() {
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Button onClick={handleCapture} disabled={!state.hasCameraPermission}>
                   <Camera className="mr-2" /> Capture Image
+                </Button>
+                 <Button onClick={handleRotateCamera} disabled={!state.hasCameraPermission} variant="outline">
+                  <RefreshCw className="mr-2" /> Rotate Camera
                 </Button>
                 <Button onClick={() => setState(p => ({...p, showCamera: false}))} variant="outline">
                   Cancel
