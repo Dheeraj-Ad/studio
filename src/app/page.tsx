@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8">
+    <div className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 bg-gradient-to-br from-background to-secondary/20">
       <header className="w-full max-w-5xl mb-12 text-center">
         <div className="inline-flex items-center gap-4">
           <div className="p-3 rounded-full bg-primary/10 text-primary">
@@ -27,7 +27,7 @@ export default function Home() {
         <section id="about" className="max-w-4xl mx-auto mb-16">
           <h2 className="mb-8 text-3xl font-bold text-center text-foreground">About Gigo Scripter</h2>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <Card className="text-center">
+            <Card className="text-center bg-card/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="inline-block p-3 mx-auto rounded-lg bg-primary/10">
                   <ScanText className="w-8 h-8 text-primary" />
@@ -40,7 +40,7 @@ export default function Home() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="text-center">
+            <Card className="text-center bg-card/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="inline-block p-3 mx-auto rounded-lg bg-primary/10">
                   <Languages className="w-8 h-8 text-primary" />
@@ -53,7 +53,7 @@ export default function Home() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="text-center">
+            <Card className="text-center bg-card/50 backdrop-blur-sm">
               <CardHeader>
                 <div className="inline-block p-3 mx-auto rounded-lg bg-primary/10">
                   <FileText className="w-8 h-8 text-primary" />
@@ -72,5 +72,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

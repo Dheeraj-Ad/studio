@@ -273,7 +273,7 @@ export default function TransliterationClient() {
 
   return (
     <>
-      <Card className="w-full max-w-4xl mx-auto mb-16">
+      <Card className="w-full max-w-4xl mx-auto mb-16 bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6">
           {!hasContent && !state.showCamera && (
             <div className="p-8 text-center border-2 border-dashed rounded-xl border-border bg-secondary/30">
@@ -440,7 +440,7 @@ export default function TransliterationClient() {
           </div>
           <div className="space-y-4">
             {state.history.map(item => (
-              <Card key={item.id}>
+              <Card key={item.id} className="bg-card/50 backdrop-blur-sm">
                 <CardContent className="p-4">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex-1 mb-4 sm:mb-0">
@@ -489,5 +489,3 @@ export default function TransliterationClient() {
     </>
   );
 }
-
-    
