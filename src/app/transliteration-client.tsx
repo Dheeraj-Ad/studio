@@ -2,7 +2,8 @@
 
 import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, ClipboardCopy, Loader2, Upload, FileText, ArrowRight, RefreshCw, BookText, History, Trash2, Repeat } from 'lucide-react';
+import { Camera, ClipboardCopy, Loader2, Upload, ArrowRight, RefreshCw, BookText, History, Trash2, Repeat } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -285,11 +286,16 @@ export default function TransliterationClient() {
 
   return (
     <>
-      <Card className="w-full max-w-4xl mx-auto mb-16 bg-card/50 backdrop-blur-sm">
-        <CardContent className="p-6">
+       <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="z-20 p-6 rounded-xl shadow-lg bg-black/40 backdrop-blur-sm w-full max-w-4xl mx-auto mb-16"
+      >
+        <CardContent className="p-0">
           {!hasContent && !state.showCamera && (
-            <div className="p-8 text-center border-2 border-dashed rounded-xl border-border bg-secondary/30">
-              <h3 className="mb-6 text-xl font-semibold">Start by providing text or an image</h3>
+            <div className="p-8 text-center border-2 border-dashed rounded-xl border-border bg-white/5">
+              <h3 className="mb-6 text-xl font-semibold text-white">Start by providing text or an image</h3>
               <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
                 <Button size="lg" onClick={() => fileInputRef.current?.click()}>
                   <Upload className="mr-2" /> Upload Image
@@ -335,9 +341,9 @@ export default function TransliterationClient() {
                 <div className="space-y-4">
                     {state.imagePreview && (
                          <div className="space-y-4">
-                            <Card className="relative w-full overflow-hidden rounded-xl aspect-square">
+                            <Card className="relative w-full overflow-hidden rounded-xl aspect-square bg-white/5 border-white/10">
                                 {state.isLoading && (
-                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-background/80 backdrop-blur-sm">
+                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black/80 backdrop-blur-sm">
                                     <Loader2 className="w-10 h-10 animate-spin text-primary" />
                                     <p className="text-lg font-medium">Analyzing Image...</p>
                                     </div>
@@ -346,20 +352,20 @@ export default function TransliterationClient() {
                             </Card>
                          </div>
                     )}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Input Text</CardTitle>
+                    <Card className="bg-transparent border-none shadow-none">
+                        <CardHeader className="p-0 mb-2">
+                            <CardTitle className="text-white">Input Text</CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-0">
                             <Textarea 
                                 value={state.inputText}
                                 onChange={(e) => setState(p => ({...p, inputText: e.target.value}))}
-                                placeholder="Enter text here or upload an image"
-                                className="min-h-[150px] text-lg"
+                                placeholder="Enter text here or upload an image..."
+                                className="min-h-[150px] text-lg bg-white/10 text-white border-white/20"
                             />
                              {state.sourceScript && (
                                 <div className="mt-4 text-sm text-muted-foreground">
-                                    Detected Script: <span className="font-semibold text-foreground">{state.sourceScript}</span>
+                                    Detected Script: <span className="font-semibold text-white">{state.sourceScript}</span>
                                 </div>
                             )}
                         </CardContent>
@@ -371,7 +377,7 @@ export default function TransliterationClient() {
                 <div className="space-y-6">
                     <div className="flex items-end gap-4">
                         <div className="flex-1">
-                            <Label htmlFor="target-script" className="text-sm font-semibold text-muted-foreground">Target Script</Label>
+                            <Label htmlFor="target-script" className="text-sm font-semibold text-gray-300">Target Script</Label>
                             <Select
                                 value={state.targetScript}
                                 onValueChange={(value) => setState(prev => ({...prev, targetScript: value}))}
@@ -404,96 +410,108 @@ export default function TransliterationClient() {
                     )}
 
                     {state.outputText && (
-                        <Card className="p-6 rounded-xl bg-primary/5">
-                        <div className="flex items-start justify-between">
-                            <h3 className="text-lg font-semibold mb-2">Transliterated Text</h3>
-                            <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-muted-foreground"
-                            onClick={() => copyToClipboard(state.outputText || '')}
-                            >
-                            <ClipboardCopy />
-                            </Button>
-                        </div>
-                        <div className="p-4 rounded-lg bg-background">
-                            <p className="text-xl font-medium text-foreground">{state.outputText}</p>
-                        </div>
-                        <Button 
-                            onClick={onGetMeaning}
-                            disabled={state.isLoadingMeaning}
-                            variant="link" 
-                            className="mt-2 p-0 h-auto"
-                        >
-                            {state.isLoadingMeaning ? (
-                                <>
-                                <Loader2 className="mr-2 animate-spin"/>
-                                Getting Meaning...
-                                </>
-                            ): (
-                                <>
-                                <BookText className="mr-2"/>
-                                Get Meaning
-                                </>
-                            )}
-                        </Button>
+                        <Card className="p-6 rounded-xl bg-primary/10 border-primary/20">
+                          <div className="flex items-start justify-between">
+                              <h3 className="text-lg font-semibold mb-2 text-white">Transliterated Text</h3>
+                              <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-gray-300 hover:text-white"
+                              onClick={() => copyToClipboard(state.outputText || '')}
+                              >
+                              <ClipboardCopy />
+                              </Button>
+                          </div>
+                          <div className="p-4 rounded-lg bg-black/20">
+                              <p className="text-xl font-medium text-white">{state.outputText}</p>
+                          </div>
+                          <Button 
+                              onClick={onGetMeaning}
+                              disabled={state.isLoadingMeaning}
+                              variant="link" 
+                              className="mt-4 p-0 h-auto text-primary/80 hover:text-primary"
+                          >
+                              {state.isLoadingMeaning ? (
+                                  <>
+                                  <Loader2 className="mr-2 animate-spin"/>
+                                  Getting Meaning...
+                                  </>
+                              ): (
+                                  <>
+                                  <BookText className="mr-2"/>
+                                  Get Meaning
+                                  </>
+                              )}
+                          </Button>
                         </Card>
                     )}
                 </div>
             </div>
           )}
         </CardContent>
-      </Card>
+      </motion.div>
 
       {state.history.length > 0 && (
-        <section id="history" className="w-full max-w-4xl mx-auto">
+        <motion.section 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          id="history" className="w-full max-w-4xl mx-auto"
+        >
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">History</h2>
+            <h2 className="text-3xl font-bold text-white">History</h2>
             <Button variant="outline" size="sm" onClick={clearHistory}>
               <Trash2 className="mr-2" /> Clear History
             </Button>
           </div>
           <div className="space-y-4">
             {state.history.map(item => (
-              <Card key={item.id} className="bg-card/50 backdrop-blur-sm">
-                <CardContent className="p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex-1 mb-4 sm:mb-0">
-                      <p className="text-xs text-muted-foreground">{new Date(item.timestamp).toLocaleString()}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <p className="font-semibold truncate" title={item.inputText}>{item.inputText}</p>
-                        <ArrowRight className="flex-shrink-0" />
-                        <p className="font-semibold text-primary truncate" title={item.outputText}>{item.outputText}</p>
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="bg-black/40 backdrop-blur-sm border-white/10">
+                  <CardContent className="p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex-1 mb-4 sm:mb-0">
+                        <p className="text-xs text-gray-400">{new Date(item.timestamp).toLocaleString()}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <p className="font-semibold truncate text-white" title={item.inputText}>{item.inputText}</p>
+                          <ArrowRight className="flex-shrink-0 text-gray-400" />
+                          <p className="font-semibold text-primary truncate" title={item.outputText}>{item.outputText}</p>
+                        </div>
+                        <div className="text-sm text-gray-400 mt-1">
+                          {item.sourceScript} &rarr; {item.targetScript}
+                        </div>
                       </div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {item.sourceScript} &rarr; {item.targetScript}
+                      <div className="flex gap-2">
+                         <Button variant="secondary" size="sm" onClick={() => reuseHistoryItem(item)}>
+                          <Repeat className="mr-2"/> Reuse
+                         </Button>
+                         <Button variant="ghost" size="icon" onClick={() => copyToClipboard(item.outputText)}>
+                          <ClipboardCopy />
+                         </Button>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                       <Button variant="secondary" size="sm" onClick={() => reuseHistoryItem(item)}>
-                        <Repeat className="mr-2"/> Reuse
-                       </Button>
-                       <Button variant="ghost" size="icon" onClick={() => copyToClipboard(item.outputText)}>
-                        <ClipboardCopy />
-                       </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
       )}
       
       <Dialog open={state.isMeaningDialogOpen} onOpenChange={(isOpen) => setState(p => ({...p, isMeaningDialogOpen: isOpen}))}>
-        <DialogContent>
+        <DialogContent className="bg-black/60 backdrop-blur-md border-primary/50 text-white">
           <DialogHeader>
             <DialogTitle>Meaning of the Text</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-300">
               Here is the definition of the transliterated text in {state.targetScript}.
             </DialogDescription>
           </DialogHeader>
-          <div className="p-4 mt-2 border rounded-lg bg-secondary/30">
+          <div className="p-4 mt-2 border rounded-lg bg-white/10 border-white/20">
             <p>{state.meaning}</p>
           </div>
           <DialogClose asChild>
