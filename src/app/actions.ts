@@ -7,6 +7,8 @@ import {
   type TransliterateTextInput,
 } from '@/ai/flows/ai-powered-transliteration';
 import { extractTextFromImage } from '@/ai/flows/extract-text-from-image';
+import { defineText, type DefineTextInput } from '@/ai/flows/define-text';
+
 
 const detectScriptAndExtractTextSchema = z.object({
   image: z.instanceof(File),
@@ -44,6 +46,17 @@ export async function handleTransliterate(input: TransliterateTextInput) {
   } catch (e) {
     const error = e instanceof Error ? e.message : 'An unknown error occurred.';
     console.error('Transliteration failed:', error);
+    return { success: false, error };
+  }
+}
+
+export async function handleGetMeaning(input: DefineTextInput) {
+  try {
+    const result = await defineText(input);
+    return { success: true, meaning: result.meaning };
+  } catch (e) {
+    const error = e instanceof Error ? e.message : 'An unknown error occurred.';
+    console.error('Getting meaning failed:', error);
     return { success: false, error };
   }
 }
