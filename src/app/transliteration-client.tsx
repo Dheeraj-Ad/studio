@@ -2,9 +2,9 @@
 
 import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, ClipboardCopy, Loader2, Upload, FileText } from 'lucide-react';
+import { Camera, ClipboardCopy, Loader2, Upload, FileText, ArrowRight, RefreshCw } from 'lucide-react';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -170,140 +170,128 @@ export default function TransliterationClient() {
 
   return (
     <div className="flex justify-center w-full">
-      <Card className="w-full max-w-2xl shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="w-6 h-6 text-primary" />
-            <span>Transliteration Tool</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {!state.imagePreview && !state.showCamera ? (
-            <div className="p-8 text-center border-2 border-dashed rounded-lg border-border">
-              <h3 className="mb-4 text-lg font-medium">Start by providing an image</h3>
-              <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                <Button onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="mr-2" /> Upload from Device
-                </Button>
-                <Button onClick={() => setState(p => ({...p, showCamera: true}))} variant="secondary">
-                  <Camera className="mr-2" /> Open Camera
-                </Button>
-                <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
-              </div>
+      <div className="w-full max-w-4xl">
+        {!state.imagePreview && !state.showCamera && (
+          <Card className="p-8 text-center border-2 border-dashed rounded-xl border-border bg-secondary/30">
+            <h3 className="mb-6 text-xl font-semibold">Start by providing an image</h3>
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+              <Button size="lg" onClick={() => fileInputRef.current?.click()}>
+                <Upload className="mr-2" /> Upload from Device
+              </Button>
+              <Button size="lg" onClick={() => setState(p => ({...p, showCamera: true}))} variant="secondary">
+                <Camera className="mr-2" /> Open Camera
+              </Button>
+              <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
             </div>
-          ) : null}
+          </Card>
+        )}
 
-          {state.showCamera ? (
-            <div className="space-y-4">
-              <div className="relative w-full overflow-hidden border rounded-lg aspect-video border-border bg-black">
-                 <video ref={videoRef} className="w-full h-full" autoPlay muted playsInline />
-                 <canvas ref={canvasRef} className="hidden" />
-              </div>
-               { state.hasCameraPermission === false && (
-                  <Alert variant="destructive">
-                    <AlertTitle>Camera Access Required</AlertTitle>
-                    <AlertDescription>
-                      Please allow camera access to use this feature. You may need to refresh the page and grant permission.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              <div className="flex flex-col gap-4 sm:flex-row">
-                 <Button onClick={handleCapture} disabled={!state.hasCameraPermission}>
-                  <Camera className="mr-2" /> Capture Image
-                </Button>
-                 <Button onClick={() => setState(p => ({...p, showCamera: false}))} variant="outline">
-                  Cancel
-                </Button>
-              </div>
+        {state.showCamera && (
+          <Card className="p-6 space-y-4 rounded-xl">
+            <div className="relative w-full overflow-hidden border rounded-lg aspect-video border-border bg-black">
+               <video ref={videoRef} className="w-full h-full" autoPlay muted playsInline />
+               <canvas ref={canvasRef} className="hidden" />
             </div>
-          ) : null}
+             { state.hasCameraPermission === false && (
+                <Alert variant="destructive">
+                  <AlertTitle>Camera Access Required</AlertTitle>
+                  <AlertDescription>
+                    Please allow camera access to use this feature. You may need to refresh the page and grant permission.
+                  </AlertDescription>
+                </Alert>
+              )}
+            <div className="flex flex-col gap-4 sm:flex-row">
+               <Button onClick={handleCapture} disabled={!state.hasCameraPermission}>
+                <Camera className="mr-2" /> Capture Image
+              </Button>
+               <Button onClick={() => setState(p => ({...p, showCamera: false}))} variant="outline">
+                Cancel
+              </Button>
+            </div>
+          </Card>
+        )}
 
-          {state.imagePreview && !state.showCamera ? (
+        {state.imagePreview && !state.showCamera && (
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             <div className="space-y-4">
-              <div className="relative w-full overflow-hidden border rounded-lg aspect-video border-border">
-                {state.isLoading && (
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-background/80">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    <p className="text-lg font-medium">Analyzing Image...</p>
-                  </div>
-                )}
-                <Image src={state.imagePreview} alt="Uploaded text" layout="fill" objectFit="contain" />
-              </div>
-              
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="p-4 rounded-md bg-secondary">
-                  <Label className="text-sm font-semibold text-muted-foreground">Detected Script</Label>
-                  <p className="text-lg font-semibold text-accent">{state.sourceScript || 'N/A'}</p>
-                </div>
-                <div className="p-4 rounded-md bg-secondary">
-                   <Label htmlFor="target-script" className="text-sm font-semibold text-muted-foreground">Select Target Script</Label>
-                   <Select
-                    value={state.targetScript}
-                    onValueChange={(value) => setState(prev => ({...prev, targetScript: value}))}
-                    disabled={!state.sourceScript}
-                  >
-                    <SelectTrigger id="target-script" className="mt-1 font-semibold">
-                      <SelectValue placeholder="Choose a script" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {indianScripts.map((script) => (
-                        <SelectItem key={script.value} value={script.value} disabled={script.value === state.sourceScript}>
-                          {script.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="input-text" className="text-sm font-semibold text-muted-foreground">
-                  Detected Text
-                </Label>
-                <div
-                  id="input-text"
-                  className="mt-1 p-3 min-h-[80px] w-full rounded-md border border-input bg-muted"
-                >
+              <Card className="relative w-full overflow-hidden rounded-xl aspect-square">
+                  {state.isLoading && (
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-background/80 backdrop-blur-sm">
+                      <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                      <p className="text-lg font-medium">Analyzing Image...</p>
+                    </div>
+                  )}
+                  <Image src={state.imagePreview} alt="Uploaded text" layout="fill" objectFit="contain" />
+              </Card>
+              <Button onClick={resetState} variant="outline" className="w-full">
+                <RefreshCw className="mr-2" /> Start Over
+              </Button>
+            </div>
+            
+            <div className="space-y-6">
+              <Card className="p-6 rounded-xl">
+                <Label className="text-sm font-semibold text-muted-foreground">Detected Text</Label>
+                <div className="mt-2 p-4 min-h-[120px] w-full rounded-lg bg-secondary/50 text-lg leading-relaxed">
                   {state.inputText || "No text detected."}
                 </div>
-              </div>
+              </Card>
 
-              <div className="flex flex-col gap-4 sm:flex-row">
-                 <Button onClick={onTransliterate} disabled={state.isLoadingTransliteration || !state.sourceScript || !state.inputText || !state.targetScript} className="w-full sm:w-auto">
-                  {state.isLoadingTransliteration ? (
-                    <>
-                      <Loader2 className="mr-2 animate-spin" /> Transliterating...
-                    </>
-                  ) : "Transliterate"}
-                </Button>
-                 <Button onClick={resetState} variant="outline" className="w-full sm:w-auto">
-                  Start Over
-                </Button>
-              </div>
-            </div>
-          ) : null}
-
-          {state.outputText && (
-            <>
-              <Separator />
-              <div className="p-4 space-y-2 rounded-lg bg-background">
-                <h3 className="text-lg font-semibold">Transliterated Text</h3>
-                <Card className="relative p-4 shadow-inner bg-secondary">
-                  <p className="text-xl font-medium text-accent-foreground">{state.outputText}</p>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={copyToClipboard}
-                  >
-                    <ClipboardCopy />
+              <div className="flex items-end gap-4">
+                  <div className="flex-1">
+                     <Label htmlFor="target-script" className="text-sm font-semibold text-muted-foreground">Target Script</Label>
+                     <Select
+                      value={state.targetScript}
+                      onValueChange={(value) => setState(prev => ({...prev, targetScript: value}))}
+                      disabled={!state.sourceScript}
+                    >
+                      <SelectTrigger id="target-script" className="mt-1 font-semibold text-base h-12">
+                        <SelectValue placeholder="Choose a script" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {indianScripts.map((script) => (
+                          <SelectItem key={script.value} value={script.value} disabled={script.value === state.sourceScript}>
+                            {script.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                   <Button size="lg" onClick={onTransliterate} disabled={state.isLoadingTransliteration || !state.sourceScript || !state.inputText || !state.targetScript} className="h-12">
+                    {state.isLoadingTransliteration ? (
+                      <Loader2 className="animate-spin" />
+                    ) : <ArrowRight />}
                   </Button>
-                </Card>
               </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+
+              {state.isLoadingTransliteration && (
+                 <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                  <Loader2 className="animate-spin" />
+                  <span>Transliterating...</span>
+                </div>
+              )}
+
+              {state.outputText && (
+                <Card className="p-6 rounded-xl bg-primary/5">
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-lg font-semibold mb-2">Transliterated Text</h3>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground"
+                      onClick={copyToClipboard}
+                    >
+                      <ClipboardCopy />
+                    </Button>
+                  </div>
+                  <div className="p-4 rounded-lg bg-background">
+                    <p className="text-xl font-medium text-foreground">{state.outputText}</p>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

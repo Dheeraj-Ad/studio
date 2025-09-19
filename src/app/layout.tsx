@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'LipiAntar',
+  title: 'Gigo Scripter',
   description: 'Transliterate any script of Bharat into another script.',
 };
 
