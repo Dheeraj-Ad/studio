@@ -4,8 +4,9 @@ export type Script = {
 };
 
 export const indianScripts: Script[] = [
+  { value: 'English', label: 'English' },
   { value: 'Bengali', label: 'Bengali (বাংলা)' },
-  { value: 'Devanagari', label: 'Devanagari (देवनागरी)' },
+  { value: 'Devanagari', label: 'Hindi (हिन्दी)' },
   { value: 'Gujarati', label: 'Gujarati (ગુજરાતી)' },
   { value: 'Gurmukhi', label: 'Gurmukhi (ਗੁਰਮੁਖੀ)' },
   { value: 'Kannada', label: 'Kannada (ಕನ್ನಡ)' },
