@@ -33,7 +33,7 @@ export default function SignupPage() {
     setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      router.push('/');
+      router.push('/translate');
     } catch (error: any) {
       toast({
         variant: 'destructive',
