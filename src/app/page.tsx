@@ -27,14 +27,6 @@ export default function LandingPage() {
             <Cpu className="w-8 h-8 text-primary" />
             <span className="text-xl font-bold">Gigo Scripter</span>
           </div>
-          <nav className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Sign Up</Button>
-            </Link>
-          </nav>
         </div>
       </header>
 
@@ -58,9 +50,9 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-8"
           >
-            <Link href="/signup">
+            <Link href="/translate">
               <Button size="lg" className="group">
-                Get Started for Free
+                Get Started
                 <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
