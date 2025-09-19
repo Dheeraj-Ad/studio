@@ -24,7 +24,7 @@ export default function Home() {
           <TransliterationClient />
         </section>
 
-        <section id="about" className="max-w-4xl mx-auto">
+        <section id="about" className="max-w-4xl mx-auto mb-16">
           <h2 className="mb-8 text-3xl font-bold text-center text-foreground">About Gigo Scripter</h2>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             <Card className="text-center">
@@ -72,3 +72,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

@@ -2,7 +2,7 @@
 
 import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, ClipboardCopy, Loader2, Upload, FileText, ArrowRight, RefreshCw, BookText } from 'lucide-react';
+import { Camera, ClipboardCopy, Loader2, Upload, FileText, ArrowRight, RefreshCw, BookText, History, Trash2, Repeat } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -14,6 +14,15 @@ import { indianScripts } from '@/lib/scripts';
 import { handleDetectScriptAndExtractText, handleTransliterate, handleGetMeaning } from './actions';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+
+type HistoryItem = {
+  id: string;
+  inputText: string;
+  sourceScript: string;
+  outputText: string;
+  targetScript: string;
+  timestamp: number;
+};
 
 type State = {
   imagePreview: string | null;
@@ -28,6 +37,7 @@ type State = {
   showCamera: boolean;
   hasCameraPermission: boolean | null;
   isMeaningDialogOpen: boolean;
+  history: HistoryItem[];
 };
 
 const initialState: State = {
@@ -43,7 +53,10 @@ const initialState: State = {
   showCamera: false,
   hasCameraPermission: null,
   isMeaningDialogOpen: false,
+  history: [],
 };
+
+const MAX_HISTORY_ITEMS = 10;
 
 export default function TransliterationClient() {
   const [state, setState] = useState<State>(initialState);
@@ -51,6 +64,17 @@ export default function TransliterationClient() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    try {
+      const storedHistory = localStorage.getItem('transliterationHistory');
+      if (storedHistory) {
+        setState(prev => ({ ...prev, history: JSON.parse(storedHistory) }));
+      }
+    } catch (error) {
+      console.error("Failed to load history from localStorage", error);
+    }
+  }, []);
   
   useEffect(() => {
     if (state.showCamera) {
@@ -130,6 +154,14 @@ export default function TransliterationClient() {
     }
   };
 
+  const updateHistory = (newHistory: HistoryItem[]) => {
+    setState(prev => ({ ...prev, history: newHistory }));
+    try {
+      localStorage.setItem('transliterationHistory', JSON.stringify(newHistory));
+    } catch (error) {
+      console.error("Failed to save history to localStorage", error);
+    }
+  };
 
   const onTransliterate = async () => {
     if (!state.sourceScript || !state.targetScript || !state.inputText) {
@@ -149,7 +181,18 @@ export default function TransliterationClient() {
     });
 
     if (result.success) {
+      const newHistoryItem: HistoryItem = {
+        id: new Date().toISOString(),
+        inputText: state.inputText,
+        sourceScript: state.sourceScript,
+        outputText: result.transliteratedText!,
+        targetScript: state.targetScript,
+        timestamp: Date.now(),
+      };
+      const newHistory = [newHistoryItem, ...state.history].slice(0, MAX_HISTORY_ITEMS);
+      updateHistory(newHistory);
       setState(prev => ({ ...prev, outputText: result.transliteratedText, isLoadingTransliteration: false }));
+
     } else {
       toast({
         variant: 'destructive',
@@ -199,15 +242,38 @@ export default function TransliterationClient() {
   };
   
   const resetState = () => {
-    setState(initialState);
+    setState(prev => ({...initialState, history: prev.history}));
     if(fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  const clearHistory = () => {
+    updateHistory([]);
+    toast({
+      title: 'History Cleared',
+    });
+  }
+
+  const reuseHistoryItem = (item: HistoryItem) => {
+    setState(prev => ({
+      ...prev,
+      imagePreview: null,
+      sourceScript: item.sourceScript,
+      targetScript: item.targetScript,
+      inputText: item.inputText,
+      outputText: item.outputText,
+      meaning: null,
+    }));
+    toast({
+      title: 'Loaded from History',
+      description: 'The selected entry has been loaded for a new transliteration.',
+    });
   }
 
   const hasContent = state.imagePreview || state.inputText;
 
   return (
     <>
-      <Card className="w-full max-w-4xl mx-auto">
+      <Card className="w-full max-w-4xl mx-auto mb-16">
         <CardContent className="p-6">
           {!hasContent && !state.showCamera && (
             <div className="p-8 text-center border-2 border-dashed rounded-xl border-border bg-secondary/30">
@@ -363,6 +429,46 @@ export default function TransliterationClient() {
           )}
         </CardContent>
       </Card>
+
+      {state.history.length > 0 && (
+        <section id="history" className="w-full max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-foreground">History</h2>
+            <Button variant="outline" size="sm" onClick={clearHistory}>
+              <Trash2 className="mr-2" /> Clear History
+            </Button>
+          </div>
+          <div className="space-y-4">
+            {state.history.map(item => (
+              <Card key={item.id}>
+                <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex-1 mb-4 sm:mb-0">
+                      <p className="text-xs text-muted-foreground">{new Date(item.timestamp).toLocaleString()}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <p className="font-semibold truncate" title={item.inputText}>{item.inputText}</p>
+                        <ArrowRight className="flex-shrink-0" />
+                        <p className="font-semibold text-primary truncate" title={item.outputText}>{item.outputText}</p>
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {item.sourceScript} &rarr; {item.targetScript}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                       <Button variant="secondary" size="sm" onClick={() => reuseHistoryItem(item)}>
+                        <Repeat className="mr-2"/> Reuse
+                       </Button>
+                       <Button variant="ghost" size="icon" onClick={() => copyToClipboard(item.outputText)}>
+                        <ClipboardCopy />
+                       </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
       
       <Dialog open={state.isMeaningDialogOpen} onOpenChange={(isOpen) => setState(p => ({...p, isMeaningDialogOpen: isOpen}))}>
         <DialogContent>
@@ -383,3 +489,5 @@ export default function TransliterationClient() {
     </>
   );
 }
+
+    
