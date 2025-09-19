@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function TranslatePage() {
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 bg-gradient-to-br from-background to-secondary/20">
+    <div className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 bg-gradient-to-br from-background to-blue-900/50">
       <header className="flex justify-between items-center w-full max-w-5xl mb-8 text-center">
         <div className="flex-1" />
         <Link href="/" className="inline-flex items-center gap-4 flex-1 justify-center">
