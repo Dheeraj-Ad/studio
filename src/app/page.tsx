@@ -1,12 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Cpu, Languages, ScanText, FileText, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
-export default function LandingPage() {
+export default function Home() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -22,121 +20,134 @@ export default function LandingPage() {
     visible: { opacity: 1, y: 0 },
   };
 
-  const featureVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.9 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        delay: i * 0.15,
-        duration: 0.5,
-        ease: 'easeOut',
-      },
-    }),
-  };
+  const paymentIcons = [
+    { name: 'paypal', hint: 'paypal logo' },
+    { name: 'coinbase', hint: 'coinbase logo' },
+    { name: 'binance', hint: 'binance logo' },
+    { name: 'revolut', hint: 'revolut logo' },
+    { name: 'exodus', hint: 'exodus logo' },
+    { name: 'bitfinex', hint: 'bitfinex logo' },
+    { name: 'blockchain', hint: 'blockchain logo' },
+  ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-background to-secondary/20 text-foreground">
-      <header className="sticky top-0 z-50 w-full backdrop-blur-sm bg-background/50">
-        <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-          <div className="flex items-center gap-2">
-            <Cpu className="w-8 h-8 text-primary" />
-            <span className="text-xl font-bold">Gigo Scripter</span>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-black text-white">
+      {/* Header */}
+      <header className="flex justify-between items-center p-6">
+        <h1 className="text-3xl font-bold">PLAYNFT</h1>
+        <nav className="hidden md:flex items-center space-x-4">
+          <a href="#" className="hover:text-blue-400">Home</a>
+          <a href="#" className="hover:text-blue-400">Explore</a>
+          <a href="#" className="hover:text-blue-400">Marketplace</a>
+          <a href="#" className="hover:text-blue-400">Artists</a>
+          <a href="#" className="hover:text-blue-400">News</a>
+          <a href="#" className="hover:text-blue-400">Search</a>
+          <Button variant="outline" className="ml-4 bg-transparent text-white border-white hover:bg-white hover:text-blue-900">Register</Button>
+        </nav>
       </header>
 
-      <main className="flex-1">
-        <section className="container flex flex-col items-center px-4 pt-24 pb-16 mx-auto text-center md:pt-32 md:pb-24">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-4"
-          >
-            <motion.h1
-              variants={itemVariants}
-              className="text-4xl font-extrabold tracking-tighter md:text-6xl lg:text-7xl"
-            >
-              Transliterate, Understand, Connect
-            </motion.h1>
-            <motion.p
-              variants={itemVariants}
-              className="max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl"
-            >
-              Break down language barriers. Instantly transliterate between Indian scripts, extract text from images, and understand the meaning with the power of AI.
-            </motion.p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-8"
-          >
-            <Link href="/translate">
-              <Button size="lg" className="group">
-                Get Started
-                <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
-          </motion.div>
-        </section>
+      {/* Hero Section */}
+      <section className="text-center py-20 px-4">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-5xl font-bold mb-4"
+        >
+          Discover, Collect and Sell Dope Art and NFTs
+        </motion.h2>
+        <p className="text-lg mb-6 max-w-2xl mx-auto">The world's largest digital marketplace for crypto collections and non-fungible tokens (NFTs).</p>
+        <div className="flex justify-center flex-wrap gap-x-8 gap-y-2 mb-6">
+          <div><strong>27k+</strong> Artworks</div>
+          <div><strong>20k+</strong> Auctions</div>
+          <div><strong>7k+</strong> Artists</div>
+          <div><strong>40k+</strong> Active Users</div>
+        </div>
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex justify-center"
+        >
+          <Image src="https://picsum.photos/seed/nft-main/256/256" alt="NFT Artwork" width={256} height={256} className="object-cover rounded-lg" data-ai-hint="nft artwork" />
+        </motion.div>
+        <div className="flex justify-center space-x-4 mt-6 text-sm">
+          <span>Ending in 2h 30m 50s</span>
+          <span>Highest Bid: 22.4 ETH</span>
+        </div>
+        <div className="flex justify-center items-center space-x-4 mt-4 flex-wrap">
+          {paymentIcons.map((icon, index) => (
+             <Image key={index} src={`https://picsum.photos/seed/${icon.name}/64/32`} alt={icon.name} width={64} height={32} className="h-8 w-auto" data-ai-hint={icon.hint}/>
+          ))}
+        </div>
+      </section>
 
-        <section id="features" className="py-16 bg-background/30 md:py-24">
-          <div className="container mx-auto">
-            <h2 className="mb-12 text-3xl font-bold text-center md:text-4xl">Why Gigo Scripter?</h2>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              {[
-                {
-                  icon: ScanText,
-                  title: 'Extract from Images',
-                  description: 'Upload an image or use your camera to automatically detect and extract text from the real world.',
-                },
-                {
-                  icon: Languages,
-                  title: 'Transliterate Scripts',
-                  description: 'Seamlessly convert text between various Indian scripts like Devanagari, Bengali, Tamil, and more.',
-                },
-                {
-                  icon: FileText,
-                  title: 'Understand the Meaning',
-                  description: 'Get a clear and concise definition of the transliterated text in your chosen language.',
-                },
-              ].map((feature, i) => (
-                <motion.div
-                  key={feature.title}
-                  custom={i}
-                  variants={featureVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.5 }}
-                  whileHover={{ y: -8, scale: 1.05, transition: { duration: 0.2 } }}
-                >
-                  <Card className="h-full text-center bg-card/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <motion.div
-                        className="inline-block p-3 mx-auto rounded-lg bg-primary/10"
-                        whileHover={{ scale: 1.1, rotate: 10 }}
-                      >
-                        <feature.icon className="w-8 h-8 text-primary" />
-                      </motion.div>
-                      <CardTitle className="mt-4">{feature.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+      {/* Popular This Week */}
+      <section className="py-16 px-4">
+        <h3 className="text-3xl font-bold text-center mb-8">Popular this week</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 container mx-auto">
+          {[1, 2, 3, 4].map((i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -8, scale: 1.05 }}
+              className="bg-gray-800/50 p-4 rounded-lg backdrop-blur-sm border border-white/10"
+            >
+              <Image src={`https://picsum.photos/seed/nft-pop-${i}/400/300`} alt={`NFT ${i}`} width={400} height={300} className="w-full h-48 object-cover rounded-lg" data-ai-hint="nft abstract" />
+              <h4 className="mt-2 font-semibold">Digital Decade #{i}</h4>
+              <p className="text-sm text-gray-400">by Anthony Garza</p>
+              <p className="text-sm font-bold mt-2">2.{i} ETH</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Top Sellers */}
+      <section className="py-16 px-4">
+        <h3 className="text-3xl font-bold text-center mb-8">Top Sellers</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 container mx-auto">
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="bg-gray-800/50 p-4 rounded-lg text-center backdrop-blur-sm border border-white/10">
+              <Image src={`https://picsum.photos/seed/seller${i}/100/100`} alt={`Seller ${i}`} width={100} height={100} className="w-24 h-24 rounded-full mx-auto" data-ai-hint="profile photo" />
+              <h4 className="mt-2 font-semibold">Leighton Kramer</h4>
+              <p>{207 - i*10}.8 ETH</p>
             </div>
-          </div>
-        </section>
-      </main>
+          ))}
+        </div>
+      </section>
 
-      <footer className="py-8 bg-background/50">
-        <div className="container px-4 mx-auto text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Gigo Scripter. All rights reserved.</p>
+      {/* Explore Artworks */}
+      <section className="py-16 px-4">
+        <h3 className="text-3xl font-bold text-center mb-8">Explore Artworks</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 container mx-auto">
+           {['Abstract', 'Sci-Fi', 'Cyberpunk', 'Fantasy'].map((category, i) => (
+            <div key={category} className="bg-gray-800/50 p-4 rounded-lg text-center backdrop-blur-sm border border-white/10">
+              <Image src={`https://picsum.photos/seed/art${i}/400/300`} alt={category} width={400} height={300} className="w-full h-48 object-cover rounded-lg" data-ai-hint={category.toLowerCase()} />
+              <h4 className="mt-2 font-semibold">{category}</h4>
+              <p className="text-sm">{20 + i*5} items</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Join Us Section */}
+      <section className="text-center py-16 px-4 bg-blue-900/70 rounded-lg mx-4 mb-8 container">
+        <h3 className="text-3xl font-bold mb-4">Join Us to Create Sell and Collect NFTs Digital Art</h3>
+        <Button className="bg-white text-blue-900 hover:bg-blue-100">Join Community</Button>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 px-4 text-center text-gray-400">
+        <p className="max-w-2xl mx-auto">The World's Largest Marketplace for crypto collections and non-fungible tokens (NFTs). Buy and sell digital assets.</p>
+        <div className="flex justify-center flex-wrap gap-x-8 gap-y-2 mt-4">
+          <a href="#" className="hover:text-white">Explore</a>
+          <a href="#" className="hover:text-white">My Account</a>
+          <a href="#" className="hover:text-white">Resources</a>
+          <a href="#" className="hover:text-white">Company</a>
+          <a href="#" className="hover:text-white">Help Center</a>
+        </div>
+        <div className="flex justify-center space-x-4 mt-6">
+          <a href="#"><Image src="https://picsum.photos/seed/x-logo/24/24" alt="X" width={24} height={24} data-ai-hint="x logo" /></a>
+          <a href="#"><Image src="https://picsum.photos/seed/fb-logo/24/24" alt="Facebook" width={24} height={24} data-ai-hint="facebook logo" /></a>
         </div>
       </footer>
     </div>
