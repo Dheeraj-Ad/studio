@@ -7,14 +7,31 @@ import { Cpu, Languages, ScanText, FileText, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function LandingPage() {
-  const featureVariants = {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
     hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const featureVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.9 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
+      scale: 1,
       transition: {
-        delay: i * 0.2,
+        delay: i * 0.15,
         duration: 0.5,
+        ease: 'easeOut',
       },
     }),
   };
@@ -33,21 +50,28 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="container flex flex-col items-center px-4 pt-24 pb-16 mx-auto text-center md:pt-32 md:pb-24">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4"
           >
-            <h1 className="text-4xl font-extrabold tracking-tighter md:text-6xl lg:text-7xl">
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl font-extrabold tracking-tighter md:text-6xl lg:text-7xl"
+            >
               Transliterate, Understand, Connect
-            </h1>
-            <p className="max-w-2xl mx-auto mt-4 text-lg text-muted-foreground md:text-xl">
+            </motion.h1>
+            <motion.p
+              variants={itemVariants}
+              className="max-w-2xl mx-auto text-lg text-muted-foreground md:text-xl"
+            >
               Break down language barriers. Instantly transliterate between Indian scripts, extract text from images, and understand the meaning with the power of AI.
-            </p>
+            </motion.p>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-8"
           >
             <Link href="/translate">
@@ -86,13 +110,17 @@ export default function LandingPage() {
                   variants={featureVariants}
                   initial="hidden"
                   whileInView="visible"
-                  viewport={{ once: true }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  whileHover={{ y: -8, scale: 1.05, transition: { duration: 0.2 } }}
                 >
-                  <Card className="h-full text-center transition-transform transform-gpu bg-card/50 backdrop-blur-sm hover:-translate-y-2">
+                  <Card className="h-full text-center bg-card/50 backdrop-blur-sm">
                     <CardHeader>
-                      <div className="inline-block p-3 mx-auto rounded-lg bg-primary/10">
+                      <motion.div
+                        className="inline-block p-3 mx-auto rounded-lg bg-primary/10"
+                        whileHover={{ scale: 1.1, rotate: 10 }}
+                      >
                         <feature.icon className="w-8 h-8 text-primary" />
-                      </div>
+                      </motion.div>
                       <CardTitle className="mt-4">{feature.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
